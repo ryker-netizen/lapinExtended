@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>VOID_ARCHIVE // LAPIN</title>
+   <script src="https://cdn.tailwindcss.com" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;400;700&display=swap');
+
+        :root {
+            --glitch-color: #ff0000;
+            --primary: #d1d1d1;
+            --bg: #050505;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #boot-screen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #00ff00;
+            padding: 20px;
+        }
+
+        .whisper {
+    position: fixed;
+    font-size: 10px;
+    opacity: 0.05;
+    pointer-events: none;
+    animation: fade 6s linear forwards;
+    z-index: 10000; /* <- добавь сюда */
+}
+
+        .viewport-background {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/asfalt-dark.png'), 
+                        radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100;
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .glitch { position: relative; display: inline-block; }
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 2px; text-shadow: -1px 0 red; top: 0;
+            background: var(--bg); overflow: hidden;
+            clip: rect(0, 900px, 0, 0);
+            animation: noise-anim 2s infinite linear alternate-reverse;
+        }
+
+        @keyframes noise-anim {
+            0% { clip: rect(10px, 9999px, 20px, 0); }
+            100% { clip: rect(80px, 9999px, 90px, 0); }
+        }
+
+        .scan-line {
+            width: 100%; height: 100px; z-index: 99;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0) 100%);
+            opacity: 0.1; position: absolute; bottom: 100%;
+            animation: scan 8s linear infinite;
+        }
+
+        @keyframes scan { 0% { bottom: 100%; } 100% { bottom: -100%; } }
+
+        .sidebar-link {
+            transition: all 0.3s ease;
+            border-left: 2px solid transparent;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            padding-left: 1rem;
+            border-left: 2px solid #fff;
+        }
+
+        .btn-branch {
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px;
+            text-align: center;
+            transition: all 0.3s;
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            font-size: 0.75rem;
+        }
+        .btn-branch:hover {
+            background: #fff;
+            color: #000;
+        }
+.whisper {
+    position: fixed;
+    font-size: 10px;
+    opacity: 0.05;
+    pointer-events: none;
+    animation: fade 6s linear forwards;
+}
+
+@keyframes fade {
+    0% { opacity: 0; }
+    50% { opacity: 0.1; }
+    100% { opacity: 0; }
+}
+        
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div id="boot-screen">
+        <div id="boot-log" class="text-xs md:text-sm leading-loose"></div>
+    </div>
+
+    <div class="viewport-background"></div>
+    <div class="scan-line"></div>
+
+    <div class="max-w-7xl mx-auto h-full flex flex-col border border-white/10 relative overflow-hidden bg-black/40 backdrop-blur-sm">
+        
+        <header class="border-b border-white/10 p-4 flex justify-between items-center bg-black/60">
+            <div class="flex items-center gap-4">
+                <span class="text-[10px] opacity-50 uppercase tracking-widest">Status: <span class="text-green-500">Online</span></span>
+                <span class="text-[10px] opacity-50 uppercase tracking-widest">Access: User_Lapin</span>
+            </div>
+            <div class="glitch font-bold tracking-widest text-sm" data-text="LAPIN SYSTEM v2.0">LAPIN SYSTEM v2.0</div>
+            <div class="text-[10px] opacity-50 font-mono" id="clock">00:00:00</div>
+        </header>
+
+        <div class="flex flex-1 overflow-hidden">
+            <nav class="w-72 border-r border-white/10 p-6 flex flex-col gap-2 bg-black/40 overflow-y-auto">
+                <div class="text-[9px] uppercase tracking-widest opacity-30 mb-4 font-bold border-b border-white/10 pb-2">Directories</div>
+                <a href="#vzaidkost" class="sidebar-link p-2 text-xs opacity-60">/root/vzaidkost</a>
+                <a href="#murmure-de-vide" class="sidebar-link p-2 text-xs opacity-60">/root/murmure-de-vide</a>
+                <a href="#ili" class="sidebar-link p-2 text-xs opacity-60">/root/ili</a>
+                <a href="#foryouhaaa" class="sidebar-link p-2 text-xs opacity-60">/root/foryouhaaa</a>
+                <a href="#limite" class="sidebar-link p-2 text-xs opacity-60">/root/limite</a>
+                
+                <div class="mt-6 text-[9px] uppercase tracking-widest opacity-30 font-bold border-b border-white/10 pb-2">Security</div>
+                <a href="#mirror_1788" class="sidebar-link p-2 text-xs text-red-400 opacity-80">/root/mirror_1788</a>
+            </nav>
+
+            <main class="flex-1 overflow-y-auto p-12 relative">
+                <div id="view-container" class="max-w-3xl mx-auto opacity-0 transition-all duration-700 transform translate-y-4"></div>
+            </main>
+        </div>
+
+        <footer class="border-t border-white/10 p-2 text-[8px] flex justify-between px-6 bg-black/90">
+            <div class="opacity-20 uppercase tracking-tighter">Syndicate Engine // Void Protocols Active</div>
+            <div class="opacity-20 uppercase tracking-widest">"ответ — это то, что ты сам унесёшь"</div>
+        </footer>
+    </div>
+
+    <script>
+        const DATA = {
+            'vzaidkost': {
+                title: 'LAPIN // VZAIDKOST',
+                content: `
+                    <div class="space-y-8">
+                        <div class="border-l-2 border-white/20 pl-6 py-4 italic text-lg opacity-90 leading-relaxed">архив неслучившегося</div>
+                        <div class="space-y-6 text-sm opacity-70 leading-relaxed">
+                            <p>здесь правда — не в строчках, а в паузе меж них,<br>где эхо без голоса стелется в тишь.<br>не место, а след от несказанных слов,<br>что таял во мгле, не дойдя до основ.</p>
+                            <p class="text-white font-bold py-4 border-y border-white/5">ты ищешь названья? его тут не жди,<br>оно растворилось в безликой груди.<br>ты видишь не буквы — лишь призрак чернил,<br>что ветер циферблатов давно уносил.</p>
+                            <p>здесь нету дверей, есть лишь тонкая грань,<br>где мысль, не рождённая, прячется в гарь.<br>ты входишь с вопросом, но вскоре поймёшь:<br>ответ — это то, что ты сам унесёшь.</p>
+                        </div>
+                    </div>`
+            },
+            'murmure-de-vide': {
+                title: 'DIRECTORY // AUUDDVORDU',
+                content: `
+                    <div class="space-y-6 text-sm opacity-70 leading-relaxed">
+                        <p>здесь числа не знают порядка, а звук - чистоты.<br>здесь падают маски, касаясь немой черты.<br>не ищи отражений - зеркало выпило взгляд,<br>в архиве, где стрелки часов не вернутся назад.</p>
+                        <p>это поле - ничьё. это сгусток изъятых времён,<br>где каждый, кто вошёл, был в чужое лицо влюблён.<br>но призрак чернил не накормит бумажный костёр,<br>и выход исчез там, где память ластик стёр.</p>
+                        <p>ты - сумма проекций. ты - отсвет в разбитом окне.<br>ответ разлагается в мёртвой, густой тишине.<br>здесь "или" не выбор, а фатум, застывший в петле,<br>где истина спит, как монета в остывшей золе.</p>
+                        <p>портал не прощает. он видит, что ты - это дым.<br>останься собой. или стань кем-то вечно чужим.</p>
+                    </div>`
+            },
+            'ili': {
+                title: 'DIRECTORY // VOZZMEZDRR',
+                content: `
+                    <div class="space-y-6 text-sm opacity-70 leading-relaxed">
+                        <p>здесь стерты границы — остался лишь голый каркас.<br>то, что должно случиться, случается прямо сейчас.<br>не ищи здесь спасенья, не жди теплоты от огня,<br>в архиве чертеж подменил и тебя, и меня.</p>
+                        <p>ты больше не ищешь? теперь ты — деталь в пустоте,<br>вписав свою тень в геометрию на холсте.<br>где раньше был голос — теперь лишь ритмичный сбой,<br>ты стал не чужим, ты просто перестал быть собой.</p>
+                        <p>здесь «или» — свершилось. петля затянулась в черте,<br>и цифры застыли на самой последней черте.<br>твой образ — не дым, а вектор в холодном ряду,<br>где время сжигает надежду, как лёд на ходу.</p>
+                        <p>теперь ты — портал. ты смотришь в него изнутри,<br>где свет превращается в код. не моргай, а смотри.<br>здесь нет окончанья. лишь пульс затаился в узлах.<br>и тысячи «кто ты?» застыли в стальных глазах.</p>
+                    </div>`
+            },
+            'foryouhaaa': {
+                title: "Si vous êtes arrivé jusqu'ici...",
+                content: `
+                    <p class="mb-8 text-sm opacity-70">Commencer par le début ou choisir sa propre fin?</p>
+                    <div class="grid grid-cols-1 gap-4">
+                        <a href="https://t.me/+EMdcGprRgmUzMDg6" target="_blank" class="btn-branch text-left">PATH_A: commençons par le début?</a>
+                        <a href="https://t.me/reflexxxvm" target="_blank" class="btn-branch text-left">PATH_B: ou..par ici?</a>
+                        <a href="https://t.me/+ek3lS2uIxHw4MjUy" target="_blank" class="btn-branch text-left text-xs">PATH_C: choisis. je vais t'aider. allons discuter. tu aimes parler à moi par allusions.</a>
+                    </div>`
+            },
+            'limite': {
+                title: 'EXPERIMENT // THE_VARIABLE',
+                content: `
+                    <p class="mb-8 text-sm italic opacity-60">Data analysis complete. The probability of an honest answer remains low, but the experiment requires a variable. Choose your path, Lapin. One link is for the truth you hide, the other is for the truth you fear.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <a href="https://t.me/m/2Z5pdpC0NmJi" target="_blank" class="btn-branch">A. TRUTH_HIDE</a>
+                        <a href="https://t.me/m/wtqtwY0LNmEy" target="_blank" class="btn-branch">B. TRUTH_FEAR</a>
+                        <a href="https://t.me/m/nif1_K6IZTli" target="_blank" class="btn-branch">C. VARIABLE</a>
+                    </div>`
+            },
+            'mirror_1788': {
+                title: 'MIRROR_DECRYPTOR_#1788',
+                content: `
+                    <div class="bg-red-900/10 border border-red-900/30 p-4 mb-6 text-[10px] uppercase text-red-500">Warning: Memory fragmentation detected.</div>
+                    <div class="bg-black/40 border border-white/5 p-6 font-mono text-xs tracking-[0.3em] mb-8 leading-loose" id="morse-box">
+                        - .... .. ... / .. ... / -. --- - / .- / -.. .-. . .- -- / ... --- -- . / --- -. . / .. ... / .-- .- - -.-. .... .. -. --. / -.-- --- ..- / .-.. .- .--. .. -.
+                    </div>
+                    <button onclick="runDecrypt()" id="dec-btn" class="border border-white/30 px-8 py-3 text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">Decode</button>
+                    <div id="dec-res" class="mt-10 text-xl font-bold tracking-[0.2em] text-white hidden glitch" data-text=""></div>`
+            }
+        };
+
+// ==== НЕ ЗАВИСЯЩЕЕ ОТ DOM ====
+let visits = localStorage.getItem('lapin_visits') || 0;
+visits++;
+localStorage.setItem('lapin_visits', visits);
+
+if (visits > 2) setTimeout(() => console.log("ты снова здесь"), 2000);
+const hour = new Date().getHours();
+if (hour >= 2 && hour <= 5) setTimeout(() => console.log("ночью архив другой"), 3000);
+
+let started = false;
+let hiddenClicks = 0;
+
+// ===== Boot лог =====
+function initBoot() {
+    const bootLog = document.getElementById('boot-log');
+    if (!bootLog) return;
+    bootLog.innerHTML = `
+<div>> INITIALIZING...</div>
+<div>> MOUNTING /ROOT/LAPIN...</div>
+<div>> ACCESSING ARCHIVES...</div>
+<div>> SYSTEM_READY.</div>
+`;
+    setTimeout(() => {
+        document.getElementById('boot-screen').style.display = 'none';
+    }, 1500);
+}
+
+// ===== Декодер MIRROR =====
+function runDecrypt() {
+    const res = document.getElementById('dec-res');
+    const btn = document.getElementById('dec-btn');
+    btn.innerHTML = "DECODING...";
+    setTimeout(() => {
+        const text = "THIS IS NOT A DREAM. SOMEONE IS WATCHING YOU, LAPIN.";
+        res.innerHTML = text;
+        res.setAttribute('data-text', text);
+        res.classList.remove('hidden');
+        btn.style.display = 'none';
+    }, 2000);
+}
+
+function playAudioForRoot(root) {
+    document.querySelectorAll('audio').forEach(a => { a.pause(); a.currentTime = 0; });
+
+    // Используем точное совпадение с id
+    let audioId = 'audio-' + root.replace('#', '');
+    const audio = document.getElementById(audioId);
+
+    if(audio) audio.play().catch(e => console.log("Audio error:", e));
+}
+
+// ===== Рендер вью =====
+function renderView() {
+    const hash = window.location.hash.replace('#', '') || 'vzaidkost';
+    const container = document.getElementById('view-container');
+
+    document.querySelectorAll('.sidebar-link').forEach(l => {
+        l.classList.toggle('active', l.getAttribute('href') === `#${hash}`);
+    });
+
+    container.classList.remove('opacity-100', 'translate-y-0');
+    container.classList.add('opacity-0', 'translate-y-4');
+
+    setTimeout(() => {
+        let htmlContent;
+        if (hash === 'mirror' || hash === 'mirror_1788') {
+    htmlContent = `
+        <h2 class="text-3xl font-bold mb-12 tracking-tighter uppercase glitch" data-text="${DATA['mirror_1788'].title}">${DATA['mirror_1788'].title}</h2>
+        ${DATA['mirror_1788'].content}
+    `;
+        } else {
+            const data = DATA[hash] || DATA['vzaidkost'];
+            htmlContent = `
+                <h2 class="text-3xl font-bold mb-12 tracking-tighter uppercase glitch" data-text="${data.title}">${data.title}</h2>
+                ${data.content}
+            `;
+        }
+
+        container.innerHTML = htmlContent;
+        container.classList.remove('opacity-0', 'translate-y-4');
+        container.classList.add('opacity-100', 'translate-y-0');
+    }, 300);
+}
+
+// ===== Шепоты =====
+function spawnWhisper() {
+    const el = document.createElement('div');
+    el.className = 'whisper';
+    const phrases = ["ты здесь", "не смотри", "он рядом", "в архиве тишина", "эхо без голоса", "след несказанных слов"];
+    el.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+    el.style.left = Math.random() * 100 + "%";
+    el.style.top = Math.random() * 100 + "%";
+    document.body.appendChild(el);
+    const flickerInterval = setInterval(() => {
+        el.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+    }, 200);
+    setTimeout(() => { clearInterval(flickerInterval); el.remove(); }, 6000);
+}
+
+// ===== Часы =====
+function updateClock() {
+    document.getElementById('clock').innerText = new Date().toTimeString().split(' ')[0];
+}
+
+// ===== Обработчики кликов =====
+document.addEventListener('DOMContentLoaded', () => {
+    // Boot
+    initBoot();
+    });
+
+    // Декодер
+    document.body.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'dec-btn') {
+        runDecrypt();
+    }
+});
+
+    // Sidebar
+    document.querySelectorAll('.sidebar-link').forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            const hash = link.getAttribute('href').replace('#','');
+            window.location.hash = hash;
+            renderView();
+            playAudioForRoot(hash);
+        });
+    });
+
+    // Мут аудио
+    const muteBtn = document.getElementById('mute-btn');
+    if (muteBtn){
+        muteBtn.onclick = () => {
+            const hash = window.location.hash.replace('#','') || 'vzaidkost';
+            const audio = document.getElementById('audio-' + hash);
+            if(audio) audio.muted = !audio.muted;
+        };
+    }
+
+    // Клики по телу
+    document.body.addEventListener('click', (e) => {
+        if (e.target === document.body) {
+            hiddenClicks++;
+            if (hiddenClicks >= 5) window.location.hash = "mirror";
+        }
+        if(!started) {
+            started = true;
+            const hash = window.location.hash.replace('#','') || 'vzaidkost';
+            playAudioForRoot(hash);
+        }
+    });
+
+    // Запуски
+    renderView();
+    setInterval(updateClock, 1000);
+    setInterval(spawnWhisper, 5000);
+</script>
+    
+<!-- Аудио источники -->
+<audio id="audio-vzaidkost" src="https://mn1.sunproxy.net/file/NFV5UEQ0dVp3OWhralBlL1JDanR6V3oveWFmR1JKM2gzQnVyNkVaMldtNTE0cE80VGwyM2xYb0pZL2RRaGJGRHhKRmVRWmxBdzdNTGZkbFpnM1ZDc2xETmJxRElzU0NSTVd3N3h6M04rbkU9/Dead_Melodies_-_Winter_s_Bite_(mp3.mn).mp3" preload="none"></audio>
+<audio id="audio-murmure-de-vide" src="https://mn1.sunproxy.net/file/NFV5UEQ0dVp3OWhralBlL1JDanR6V3oveWFmR1JKM2gzQnVyNkVaMldtNTE0cE80VGwyM2xYb0pZL2RRaGJGRFdGZktJU2NPMmZWVGJqVCtwNUxzaVo3NUtxZ3BSUkN2UFlXVWJGL1hnWmM9/Biosphere_and_Deathprod_-_Trasparenza_(mp3.mn).mp3" preload="none"></audio>
+<audio id="audio-ili" src="https://mn1.sunproxy.net/file/NFV5UEQ0dVp3OWhralBlL1JDanR6V3oveWFmR1JKM2gzQnVyNkVaMldtNTE0cE80VGwyM2xYb0pZL2RRaGJGRHVzLzJlc3BpSVY5TFdpM29UR0lyV2N6eXA3Q2tSRDg3VXJxdGZaVkF0cTg9/Anna_von_Hausswolff_-_Sacro_Bosco_(mp3.mn).mp3" preload="none"></audio>
+<audio id="audio-foryouhaaa" src="https://mn1.sunproxy.net/file/NFV5UEQ0dVp3OWhralBlL1JDanR6V3oveWFmR1JKM2gzQnVyNkVaMldtNTE0cE80VGwyM2xYb0pZL2RRaGJGRFRiTHRHWmpJWnpWZGpzOGo5ZGE5Z2ZsSkx6N2M1WlNhSTlVVEZ1aEVkMzQ9/-_THE_PARADISE_VIEW_(mp3.mn).mp3" preload="none"></audio>
+<audio id="audio-limite" src="https://mn1.sunproxy.net/file/NFV5UEQ0dVp3OWhralBlL1JDanR6V3oveWFmR1JKM2gzQnVyNkVaMldtNTE0cE80VGwyM2xYb0pZL2RRaGJGRGRSZlJhcmgxL1pBMzZnK0VTUmRkYWd0eWozS3FvTHNXYVVMRS8wQUVKOU09/Massive_Attack_-_Angel_Blur_Remix_(mp3.mn).mp3" preload="none"></audio>
+<audio id="audio-mirror_1788" src="https://mn1.sunproxy.net/file/NFV5UEQ0dVp3OWhralBlL1JDanR6V3oveWFmR1JKM2gzQnVyNkVaMldtNTE0cE80VGwyM2xYb0pZL2RRaGJGRHN3SHkzdnp3bEF2WG1Ua2x6MHRUQ3Z0RVVOcmpzMUQrL2Jza3RhUXZMeDQ9/Surprise_Chef_-_Crayfish_Caper_(mp3.mn).mp3" preload="none"></audio>
+    
+<div id="mute-btn" style="
+position:fixed;top:10px;right:10px;
+font-size:10px;opacity:0.5;cursor:pointer;z-index:999;">
+MUTE
+</div>
+</body>
+</html>
