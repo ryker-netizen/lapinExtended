@@ -33,16 +33,10 @@
             align-items: center;
             color: #00ff00;
             padding: 20px;
-        }
-
-        .whisper {
-    position: fixed;
-    font-size: 10px;
-    opacity: 0.05;
-    pointer-events: none;
-    animation: fade 6s linear forwards;
-    z-index: 10000; /* <- добавь сюда */
-}
+            
+.glitch-transition {
+    filter: url('#glitchEffect'); /* можно добавить SVG фильтр или просто pixel shift через translateX/Y */
+    transform: skew(1deg, 1deg) translate(2px, -1px);
 
         .viewport-background {
             position: fixed;
@@ -52,6 +46,32 @@
             opacity: 0.4;
             z-index: -1;
         }
+
+    .hidden-meaning {
+    color: transparent;
+    position: relative;
+}
+.hidden-meaning:hover::after {
+    content: attr(data-meaning);
+    color: #ff0;
+    position: absolute;
+    left: 0; top: 0;
+}
+
+    @keyframes mirror-break {
+    0% {transform: rotate(0deg) skew(0deg);}
+    50% {transform: rotate(2deg) skew(5deg); opacity:0.7;}
+    100% {transform: rotate(-1deg) skew(-3deg); opacity:1;}
+}
+    header .glitch {
+    text-shadow: 0 0 1px #fff, 0 0 2px #0f0, 0 0 3px #f00;
+    animation: crt-glitch 0.1s infinite alternate;
+}
+@keyframes crt-glitch {
+    0% {text-shadow: 0 0 1px #fff, 0 0 2px #0f0;}
+    50% {text-shadow: 0 0 2px #ff0, 0 0 1px #0ff;}
+    100% {text-shadow: 0 0 3px #f0f, 0 0 2px #0f0;}
+}
 
         body::before {
             content: " ";
@@ -64,6 +84,10 @@
             background-size: 100% 4px, 3px 100%;
             pointer-events: none;
         }
+
+    body {
+    cursor: url('https://example.com/cursed-eye-cursor.png'), auto;
+}
 
         .glitch { position: relative; display: inline-block; }
         .glitch::after {
@@ -79,6 +103,13 @@
             0% { clip: rect(10px, 9999px, 20px, 0); }
             100% { clip: rect(80px, 9999px, 90px, 0); }
         }
+
+    .typing-indicator {
+    font-style: italic;
+    opacity: 0.6;
+    animation: blink 1s infinite;
+}
+@keyframes blink { 0%, 50%, 100% {opacity:0.6;} 25%, 75% {opacity:0;} }
 
         .scan-line {
             width: 100%; height: 100px; z-index: 99;
@@ -158,6 +189,7 @@
                 <a href="#ili" class="sidebar-link p-2 text-xs opacity-60">/root/ili</a>
                 <a href="#foryouhaaa" class="sidebar-link p-2 text-xs opacity-60">/root/foryouhaaa</a>
                 <a href="#limite" class="sidebar-link p-2 text-xs opacity-60">/root/limite</a>
+                <div id="signal-bar" style="width:100%;height:4px;background:#0f0;"></div>
                 
                 <div class="mt-6 text-[9px] uppercase tracking-widest opacity-30 font-bold border-b border-white/10 pb-2">Security</div>
                 <a href="#mirror_1788" class="sidebar-link p-2 text-xs text-red-400 opacity-80">/root/mirror_1788</a>
@@ -252,6 +284,12 @@ if (hour >= 2 && hour <= 5) setTimeout(() => console.log("ночью архив 
 let started = false;
 let hiddenClicks = 0;
 
+        function triggerGlitch() {
+    const container = document.getElementById('view-container');
+    container.classList.add('glitch-transition');
+    setTimeout(() => container.classList.remove('glitch-transition'), 1000);
+}
+
 // ===== Boot лог =====
 function initBoot() {
     const bootLog = document.getElementById('boot-log');
@@ -338,10 +376,37 @@ function spawnWhisper() {
     }, 200);
     setTimeout(() => { clearInterval(flickerInterval); el.remove(); }, 6000);
 }
+      setTimeout(() => spawnWhisper("ты всё ещё здесь?.."), 180000); // 3 минуты  
 
+        function showTypingIndicator() {
+    const container = document.getElementById('view-container');
+    const el = document.createElement('div');
+    el.className = 'typing-indicator';
+    el.innerText = "Lapin печатает...";
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+}
+
+        function mirrorBreakAnimation() {
+    const container = document.getElementById('view-container');
+    container.style.animation = 'mirror-break 1s forwards';
+}
+        const fsBtn = document.getElementById('fullscreen-btn');
+fsBtn.onclick = () => {
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+};
 // ===== Часы =====
 function updateClock() {
     document.getElementById('clock').innerText = new Date().toTimeString().split(' ')[0];
+}
+
+        function unlockChat(chatId) {
+    const link = document.querySelector(`.sidebar-link[href="#${chatId}"]`);
+    if(link) {
+        link.style.opacity = '1';
+        link.dataset.unlocked = 'true';
+    }
 }
 
 // ===== Обработчики кликов =====
